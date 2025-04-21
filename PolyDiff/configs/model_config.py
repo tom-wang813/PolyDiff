@@ -1,0 +1,9 @@
+VOCAB_SIZE= 30522  # Vocabulary size
+D_MODEL = 768  # embedding dimension
+NUM_LAYERS = 12  # Transformer layer number
+NHEAD = 12  # Number of attention heads
+DIM_FEEDFORWARD = 3072  # Feedforward layer dimension
+DROPOUT = 0.1  # Dropout ratio
+MAX_SEQ_LENGTH = 512  # maximum sequence length
+MASK_TOKEN_ID = 0  # Mask token ID
+PAD_TOKEN_ID = 1  # Padding token ID

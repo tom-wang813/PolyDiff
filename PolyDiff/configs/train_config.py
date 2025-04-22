@@ -1,6 +1,15 @@
-# Path settings
-CHECKPOINT_DIR = "/home/wangziwei/graphdiffusion/PolyDiff/model_state/checkpoint"  # Directory for saving checkpoints
-GRADIENT_SAVE_DIR = "/home/wangziwei/graphdiffusion/PolyDiff/model_state/gradient_saves"  # Directory for saving gradients
+from pathlib import Path
+
+# 找到 PolyDiff/ 目錄
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+MODEL_STATE_DIR     = PROJECT_ROOT / "model_state"
+CHECKPOINT_DIR      = MODEL_STATE_DIR / "checkpoint"
+GRADIENT_SAVE_DIR   = MODEL_STATE_DIR / "gradient_saves"
+
+# 確保資料夾存在（也可以放到 TrainingStateManager 裡統一建立）
+CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+GRADIENT_SAVE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Saving interval settings
 SAVE_INTERVAL = 1000  # Checkpoint saving interval (in steps)

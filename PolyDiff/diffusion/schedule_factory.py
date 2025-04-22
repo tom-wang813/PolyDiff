@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from PolyDiff.configs import diffusion_config
-from PolyDiff.diffuion.diffusion_forward import LinearSchedule, CosineSchedule, SigmoidSchedule
+from PolyDiff.diffusion.diffusion_forward import LinearSchedule, CosineSchedule, SigmoidSchedule
 
 __all__ = ["get_schedule"]
 

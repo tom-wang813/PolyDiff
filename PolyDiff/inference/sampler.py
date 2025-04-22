@@ -1,3 +1,11 @@
+# inference/sampler.py
+from typing import Optional
+
+import torch
+
+from PolyDiff.configs import model_config
+
+
 from __future__ import annotations
 
 """PolyDiff – discrete diffusion sampling utilities
@@ -15,7 +23,7 @@ from torch import nn
 from tqdm.auto import trange
 
 from PolyDiff.configs import model_config, diffusion_config
-from PolyDiff.diffuion.diffusion_forward import BaseSchedule
+from PolyDiff.diffusion.diffusion_forward import BaseSchedule
 
 __all__ = ["DiscreteSampler"]
 
@@ -82,15 +90,28 @@ class DiscreteSampler:
         return x.cpu()
 
 
-if __name__ == "__main__":
-    # quick smoke‑test with random logits
-    class DummyModel(nn.Module):
-        def forward(self, x, t):
-            B, L = x.shape
-            return torch.randn(B, L, model_config.VOCAB_SIZE, device=x.device)
-
-    from PolyDiff.diffuion.diffusion_forward import LinearSchedule
-
-    sampler = DiscreteSampler(DummyModel(), LinearSchedule(10), device="cpu")
-    out = sampler.sample(batch_size=2, seq_len=10, top_k=20)
-    print(out)
+def sample_model(
+    model: torch.nn.Module,
+    schedule,
+    num_samples: int,
+    seq_len: int,
+    temperature: float = 1.0,
+    top_k: Optional[int] = None,
+    device: str = "cpu",
+) -> torch.Tensor:
+    """
+    使用 DiscreteSampler 做純推理，回傳 shape=(num_samples, seq_len) 的長整數 tensor。
+    """
+    sampler = DiscreteSampler(
+        model=model,
+        schedule=schedule,
+        mask_token_id=model_config.MASK_TOKEN_ID,
+        pad_token_id=model_config.PAD_TOKEN_ID,
+        device=device,
+    )
+    return sampler.sample(
+        batch_size=num_samples,
+        seq_len=seq_len,
+        temperature=temperature,
+        top_k=top_k,
+    )

@@ -1,0 +1,8 @@
+defaults:
+  - model: bert
+  - optimizer: adamw
+  - scheduler: linear
+  - data: default
+  - trainer: default
+
+seed: 123

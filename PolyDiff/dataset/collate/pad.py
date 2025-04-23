@@ -11,7 +11,7 @@ from PolyDiff.dataset.base import register_collate
 @register_collate("pad")
 class PadCollator:
     """
-    Simple left‑aligned padding.
+    Simple left-aligned padding.
 
     >>> collate = PadCollator(pad_token=0)
     >>> batch   = collate(list_of_tensors)

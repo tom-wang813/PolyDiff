@@ -8,7 +8,6 @@ import torch
 from PolyDiff.dataset.base import register_collate
 from PolyDiff.dataset.collate.pad import PadCollator
 from PolyDiff.diffusion import AbsorbingDiffusion
-from PolyDiff.configs import diffusion_config
 
 
 @register_collate("diffusion")

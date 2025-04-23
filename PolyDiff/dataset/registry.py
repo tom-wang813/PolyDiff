@@ -1,6 +1,6 @@
 # PolyDiff/dataset/registry.py
 """
-Thin re‑export of registry utilities defined in `dataset.base`.
+Thin re-export of registry utilities defined in `dataset.base`.
 
 這樣用戶可選擇：
     from PolyDiff.dataset import build_dataset

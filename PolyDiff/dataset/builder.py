@@ -11,7 +11,7 @@ from PolyDiff.dataset.registry import build_dataset, build_collate
 
 
 # --------------------------------------------------------------------------- #
-# simple dataclass config ‑ 可由 yaml 轉換而來
+# simple dataclass config ‑ Can be converted to/from YAML
 # --------------------------------------------------------------------------- #
 @dataclass
 class DataConfig:

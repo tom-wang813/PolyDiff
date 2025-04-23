@@ -18,7 +18,7 @@ PAD = model_config.PAD_TOKEN_ID
 @register_dataset("text_diffusion")
 class TextDiffusionDataset(BaseIterableDataset):
     """
-    Streaming text corpus → token‑ids
+    Streaming text corpus → token ids
 
     Parameters
     ----------
@@ -78,12 +78,3 @@ class TextDiffusionDataset(BaseIterableDataset):
                 yield torch.tensor(ids, dtype=torch.long)
 
 
-# --------------------------------------------------------------------------- #
-# basic padding collate — 可替換
-# --------------------------------------------------------------------------- #
-def _pad(batch: List[torch.Tensor]) -> torch.Tensor:
-    max_len = max(x.size(0) for x in batch)
-    padded  = torch.full((len(batch), max_len), PAD, dtype=torch.long)
-    for i, seq in enumerate(batch):
-        padded[i, : seq.size(0)] = seq
-    return padded

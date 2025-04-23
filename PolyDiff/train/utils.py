@@ -7,7 +7,7 @@ import torch
 
 def seed_everything(seed: int) -> None:
     """
-    为 Python、NumPy、PyTorch (CPU & 所有 GPU) 设定随机种子。
+    Set random seed for Python, NumPy, and PyTorch (CPU & all GPUs).
     """
     random.seed(seed)
     np.random.seed(seed)

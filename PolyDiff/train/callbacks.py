@@ -1,9 +1,23 @@
 # PolyDiff/train/callbacks.py
 
-from typing import Dict, Any, Optional
-from torch.utils.tensorboard import SummaryWriter
-from PolyDiff.train.utils import seed_everything
+from typing import Dict, Any, Optional, Union
+from pathlib import Path
 
+from torch.utils.tensorboard import SummaryWriter
+from torch.optim import Optimizer
+from torch.nn import Module
+from torch.optim.lr_scheduler import _LRScheduler
+
+from PolyDiff.train.utils import seed_everything
+from PolyDiff.train.checkpoint import ModelCheckpointManager
+
+__all__ = [
+    "Callback",
+    "ReproducibilityCallback",
+    "TensorboardCallback",
+    "ModelCheckpointCallback",
+    "EarlyStoppingCallback",
+]
 
 class Callback:
     """
@@ -97,3 +111,102 @@ class TensorboardCallback(Callback):
 
     def on_train_end(self, trainer: Any) -> None:
         self.writer.close()
+
+
+class ModelCheckpointCallback(Callback):
+    """
+    Restore at the start of training, save at the end of each epoch.
+    """
+
+    def __init__(
+        self,
+        model: Module,
+        optimizer: Optimizer,
+        scheduler: _LRScheduler,
+        resume: bool = False,
+        ckpt_dir: Union[str, Path] = "checkpoints",
+    ) -> None:
+        # Initialize manager with custom checkpoint directory
+        self.ckpt_mgr = ModelCheckpointManager(
+            model=model,
+            optimizer=optimizer,
+            scheduler=scheduler,
+            ckpt_dir=Path(ckpt_dir),
+        )
+        self.resume = resume
+        self.loaded_meta: Optional[Dict[str, int]] = None
+
+    def on_train_start(self, trainer: Any) -> None:
+        if self.resume:
+            meta = self.ckpt_mgr.load()
+            if meta is not None:
+                trainer.epoch = meta["epoch"] + 1
+                trainer.global_step = meta["step"] + 1
+                print(
+                    f"[CheckpointCallback] Resume from epoch={trainer.epoch} "
+                    f"step={trainer.global_step}"
+                )
+
+    def on_epoch_end(self, trainer: Any, metrics: Dict[str, Any]) -> None:
+        # The "metrics" dict typically contains an "epoch" field
+        epoch = metrics.get("epoch", trainer.epoch)
+        self.ckpt_mgr.save(step=trainer.global_step, epoch=epoch)
+
+
+
+
+class EarlyStoppingCallback(Callback):
+    """
+    General Early-Stopping callback supporting min/max mode, patience, and delta.
+
+    Example:
+        EarlyStoppingCallback(
+            monitor="val_loss",
+            mode="min",
+            delta=0.01,
+            patience=3,
+            verbose=True
+        )
+    """
+
+    def __init__(
+        self,
+        monitor: str = "val_loss",
+        mode: str = "min",
+        delta: float = 0.0,
+        patience: int = 3,
+        verbose: bool = False,
+    ) -> None:
+        assert mode in ("min", "max"), "mode must be 'min' or 'max'"
+        self.monitor = monitor
+        self.mode = mode
+        self.delta = delta
+        self.patience = patience
+        self.verbose = verbose
+
+        self.best: float | None = None
+        self.counter = 0
+
+    def on_epoch_end(self, trainer: Any, metrics: Dict[str, Any]) -> None:
+        current = metrics.get(self.monitor)
+        if current is None:
+            return
+
+        improved = (
+            (self.mode == "min" and (self.best is None or current < self.best - self.delta))
+            or (self.mode == "max" and (self.best is None or current > self.best + self.delta))
+        )
+
+        if improved:
+            self.best = current
+            self.counter = 0
+            if self.verbose:
+                print(f"[EarlyStopping] {self.monitor} improved to {current:.4f}")
+        else:
+            self.counter += 1
+            if self.verbose:
+                print(f"[EarlyStopping] counter: {self.counter}/{self.patience}")
+            if self.counter >= self.patience:
+                print("[EarlyStopping] Triggered, will stop training.")
+                # 通过给 trainer 设置标记来通知
+                trainer.stop_training = True

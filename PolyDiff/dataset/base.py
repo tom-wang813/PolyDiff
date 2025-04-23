@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Dict, Callable, Any
+from typing import Dict, Callable
 
 from torch.utils.data import IterableDataset, Dataset
 
@@ -61,7 +61,7 @@ class BaseIterableDataset(IterableDataset, ABC):
 
 class BaseMapDataset(Dataset, ABC):
     """
-    Map‑style dataset base; implement `__getitem__` & `__len__`.
+    Map-style dataset base; implement `__getitem__` & `__len__`.
     """
 
     @abstractmethod

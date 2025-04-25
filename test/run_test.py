@@ -1,7 +1,8 @@
 import hydra
 from omegaconf import DictConfig
 import torch
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader
+
 from PolyDiff.train.get_trainer import get_trainer
 
 import warnings
@@ -18,7 +19,7 @@ class DummyDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, idx: int):
         # 返回 dict，以符合 Trainer.expect 預期
-        return {"input": self.x[idx], "labels": {"target": self.y[idx]}}
+        return {"input": self.x[idx], "labels": {"loss": self.y[idx]}}
 
 
 def make_dummy_loader(batch_size: int, in_features: int, out_features: int, n_samples: int = 100):
@@ -32,11 +33,13 @@ class TestModel(torch.nn.Module):
 
     def forward(self, x):
         x = self.fc(x)
-        return {"target": x}
+        return {"loss": x}
     
 @hydra.main(config_path="conf", config_name="config.yaml")
 def main(cfg: DictConfig):
     # 由 cfg.data 自動 instantiate train/val loader
+    print(f"cfg is {cfg}")
+    print(f"cfg exp dir is {cfg.trainer.exp_dir}")
     trainer = get_trainer(cfg)
     # 執行訓練
     print(f"trainer.loss_fns is {trainer.loss_fns}")

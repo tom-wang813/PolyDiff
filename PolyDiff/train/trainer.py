@@ -52,6 +52,7 @@ class Trainer:
         scheduler: _LRScheduler,
         train_loader: DataLoader,
         val_loader: DataLoader,
+        exp_dir: str,
         *,
         loss_fns: Optional[Dict[str, Callable]] = None,
         device: str | torch.device = "cpu",
@@ -63,7 +64,6 @@ class Trainer:
         seed: int = 42,
         validate_every_n_steps: Optional[int] = None,
     ) -> None:
-        # — device & model & optional DDP wrap —
         self.device = torch.device(device)
         self.model = model.to(self.device)
 
@@ -72,7 +72,7 @@ class Trainer:
         self.scheduler = scheduler
         self.train_loader = train_loader
         self.val_loader = val_loader
-        self.loss_fns = loss_fns or {"target": torch.nn.CrossEntropyLoss()}
+        self.loss_fns = loss_fns or {"loss": torch.nn.CrossEntropyLoss()}
         self.max_epochs = max_epochs
         self.grad_accum_steps = grad_accum_steps
         self.clip_grad_norm = clip_grad_norm
@@ -82,17 +82,16 @@ class Trainer:
         self.callbacks: List[Callback] = callbacks or []
         if not any(isinstance(cb, ReproducibilityCallback) for cb in self.callbacks):
             self.callbacks.insert(0, ReproducibilityCallback(seed=seed))
-        ckpt_cb = ModelCheckpointCallback(model, optimizer, scheduler, resume=resume)
+        ckpt_cb = ModelCheckpointCallback(model, optimizer, scheduler, resume=resume, ckpt_dir=exp_dir)
         self.callbacks.insert(1, ckpt_cb)
         if not any(isinstance(cb, TensorboardCallback) for cb in self.callbacks):
-            ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            self.callbacks.append(TensorboardCallback(log_dir=f"runs/train_{ts}"))
+            self.callbacks.append(TensorboardCallback(log_dir=exp_dir))
 
         if not any(isinstance(cb, EarlyStoppingCallback) for cb in self.callbacks):
             self.callbacks.append(
                 EarlyStoppingCallback(
                     monitor="val_loss",
-                    patience=5,
+                    patience=50,
                     mode="min",
                     verbose=True,
                 )

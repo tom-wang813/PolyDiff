@@ -99,6 +99,7 @@ class TensorboardCallback(Callback):
         for name, value in metrics.items():
             # e.g. tag = "train/loss" 或 "val/loss"
             tag = f"{phase}/{name}"
+
             self.writer.add_scalar(tag, value, trainer.global_step)
 
     def on_epoch_end(self, trainer: Any, metrics: Dict[str, Any]) -> None:
@@ -133,6 +134,7 @@ class ModelCheckpointCallback(Callback):
             scheduler=scheduler,
             ckpt_dir=Path(ckpt_dir),
         )
+
         self.resume = resume
         self.loaded_meta: Optional[Dict[str, int]] = None
 
@@ -142,11 +144,7 @@ class ModelCheckpointCallback(Callback):
             if meta is not None:
                 trainer.epoch = meta["epoch"] + 1
                 trainer.global_step = meta["step"] + 1
-                print(
-                    f"[CheckpointCallback] Resume from epoch={trainer.epoch} "
-                    f"step={trainer.global_step}"
-                )
-
+                
     def on_epoch_end(self, trainer: Any, metrics: Dict[str, Any]) -> None:
         # The "metrics" dict typically contains an "epoch" field
         epoch = metrics.get("epoch", trainer.epoch)

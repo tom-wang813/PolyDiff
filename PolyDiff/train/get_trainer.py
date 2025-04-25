@@ -21,6 +21,8 @@ def get_trainer(cfg: DictConfig) -> Trainer:         # ← 只保留這個介面
     # 2) Callbacks（cfg.callbacks 可以是 ListConfig）
     callbacks = [instantiate(cb) for cb in cfg.get("callbacks", [])]
 
+    exp_dir = cfg.trainer.exp_dir
+
     # 3) 組裝 Trainer
     trainer = Trainer(
         model=model,
@@ -29,6 +31,7 @@ def get_trainer(cfg: DictConfig) -> Trainer:         # ← 只保留這個介面
         train_loader=train_loader,
         val_loader=val_loader,
         loss_fns=instantiate(cfg.get("loss_fns")) if "loss_fns" in cfg else None,
+        exp_dir=exp_dir,
         device=cfg.trainer.device,
         max_epochs=cfg.trainer.max_epochs,
         grad_accum_steps=cfg.trainer.grad_accum_steps,
@@ -36,6 +39,6 @@ def get_trainer(cfg: DictConfig) -> Trainer:         # ← 只保留這個介面
         callbacks=callbacks,
         resume=cfg.trainer.resume,
         validate_every_n_steps=cfg.trainer.validate_every_n_steps,
-        seed=cfg.seed,                            # ↓ 第 3 節會加進 Trainer
+        seed=cfg.seed,                          
     )
     return trainer

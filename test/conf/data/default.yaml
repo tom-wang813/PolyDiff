@@ -1,5 +1,5 @@
 train_loader:
-  _target_: PolyDiff.test.run_test.make_dummy_loader
+  _target_: run_test.make_dummy_loader
   batch_size: 4
   in_features: ${model.in_features}
   out_features: ${model.out_features}

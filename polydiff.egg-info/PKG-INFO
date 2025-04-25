@@ -1,0 +1,7 @@
+Metadata-Version: 2.2
+Name: polydiff
+Version: 0.1.0
+Requires-Dist: torch
+Requires-Dist: omegaconf
+Requires-Dist: hydra-core
+Dynamic: requires-dist

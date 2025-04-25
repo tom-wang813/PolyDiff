@@ -1,8 +1,13 @@
 defaults:
-  - model: bert
+  - model: model
   - optimizer: adamw
   - scheduler: linear
   - data: default
   - trainer: default
 
 seed: 123
+hydra:
+  run:
+    dir: ${trainer.exp_dir}
+
+

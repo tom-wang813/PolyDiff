@@ -1,16 +1,17 @@
-from PolyDiff.diffusion.diffusion_forward import (
-    LinearSchedule,
-    CosineSchedule,
-    SigmoidSchedule,
-    AbsorbingDiffusion,
-)
-from PolyDiff.diffusion.schedule_factory import get_schedule
+"""
+Diffusion modules for PolyDiff.
+
+This package contains implementations of diffusion processes and noise schedules.
+"""
+from .forward import DiffusionForward, ExcitedStateDiffusion
+from .schedules import (CosineSchedule, DiffusionSchedule, LinearSchedule,
+                        QuadraticSchedule)
 
 __all__ = [
-    # Diffusion Schedules
-    "LinearSchedule", "CosineSchedule", "SigmoidSchedule", 
-    # Diffusion Forward
-    "AbsorbingDiffusion", 
-    # Schedule Factory
-    "get_schedule"
-    ]
+    "DiffusionForward",
+    "ExcitedStateDiffusion",
+    "DiffusionSchedule",
+    "LinearSchedule",
+    "CosineSchedule",
+    "QuadraticSchedule",
+]

@@ -1,0 +1,8 @@
+data/
+mlruns/
+.coverage
+*.pyc
+.flake8
+mypy.ini
+.vscode/
+__pycache__/

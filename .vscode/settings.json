@@ -9,13 +9,13 @@
     "search.exclude": {
       "**/__pycache__": true,
       "**/pyache":      true,
-      "**/.git/objects/**": true,
-      "**/.git/subtree-cache/**": true
+      // "**/.git/objects/**": true,
+      // "**/.git/subtree-cache/**": true
     },
-    // 在檔案總管側邊欄隱藏 .git 資料夾
-    "files.watcherExclude": {
-      "**/.git/objects/**": true,
-      "**/.git/subtree-cache/**": true
-    }
+    "python.testing.pytestArgs": [
+      "test"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
   }
   

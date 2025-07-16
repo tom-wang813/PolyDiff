@@ -1,7 +1,0 @@
-device: "mps"
-max_epochs: 300
-grad_accum_steps: 1
-clip_grad_norm: 1.0
-resume: false
-validate_every_n_steps: 100
-exp_dir: "/Users/wang-work/polydiffusion/testresults"

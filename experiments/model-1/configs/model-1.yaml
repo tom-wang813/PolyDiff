@@ -1,0 +1,72 @@
+# Model-1 Configuration - BERT Diffusion with ChemBERT Tokenizer
+# Experiment: model-1
+# Date: 2025-05-29
+# Description: First formal training run with ChemBERT tokenizer and optimized settings
+
+# Model Architecture (passed to BertConfig)
+model:
+  vocab_size: 768 # Placeholder, will be set by tokenizer.vocab_size
+  hidden_size: 256
+  num_hidden_layers: 2 # Reduced for quick testing
+  num_attention_heads: 8
+  intermediate_size: 1024 # Default BERT intermediate size for hidden_size 256
+  # max_position_embeddings: 512 # This will be handled by data.max_length and BertConfig default
+
+# Diffusion Settings (passed to DiffusionTask)
+diffusion:
+  num_timesteps: 5 # Reduced for quick testing
+  schedule_type: "cosine" # Changed to cosine as suggested in comments
+  beta_start: 0.0001 # Reverted to more standard values for cosine schedule
+  beta_end: 0.02   # Reverted to more standard values for cosine schedule
+
+# Data Configuration (passed to SmilesDataModule)
+data:
+  data_path: "data/smiles_test.txt" # Changed to small test file
+  tokenizer_name: "seyonec/ChemBERTa-zinc-base-v1" # Renamed from tokenizer_type
+  train_split: 0.8
+  batch_size: 2 # Reduced for quick testing
+  num_workers: 4
+  max_length: 512 # Moved from model section
+  val_subset_ratio: 1.0 # Changed from 0.2 to use full validation set by default
+
+# Optimizer Configuration (passed to DiffusionTask)
+optimizer:
+  lr: 0.0005
+  weight_decay: 0.01
+
+# Trainer Configuration (passed to pl.Trainer)
+trainer:
+  accelerator: "mps" # Moved from hardware
+  devices: "auto"    # Moved from hardware
+  max_epochs: 1 # Reduced for quick testing
+  precision: "32"    # Moved from hardware
+  # gradient_clip_val: 1.0 # Add back if needed
+  # accumulate_grad_batches: 1 # Add back if needed
+
+# Checkpointing Configuration (for ModelCheckpoint callback)
+checkpointing:
+  enable: true
+  dirpath: "experiments/model-1/checkpoints"
+  filename: "best-{epoch:02d}-{val_loss:.2f}" # Example filename
+  monitor: "val_loss"
+  mode: "min"
+  save_top_k: 3
+  save_last: true
+
+# Generation Configuration (for logging samples during training)
+generation:
+  enable: true
+  num_samples: 5
+  max_length: 10 # Use a small length for quick sample generation
+  temperature: 1.0
+  seed: 42
+  log_every_n_epochs: 1
+
+# Logging Configuration (for TensorBoardLogger)
+logging:
+  enable: true
+  save_dir: "experiments/model-1/logs"
+  name: "bert_diffusion_model_1"
+  version: "v1.0"
+  # log_level: "INFO" # Handled by basicConfig in train.py
+  # wandb_project: "polydiffusion-model-1" # Not used by TensorBoardLogger

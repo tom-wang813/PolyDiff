@@ -18,11 +18,12 @@ Usage:
 import mlflow
 import mlflow.pytorch
 import argparse
+from typing import Union
 import logging
 from pathlib import Path
 
 import pytorch_lightning as pl
-from omegaconf import OmegaConf
+from omegaconf import OmegaConf, DictConfig, ListConfig
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 
@@ -36,14 +37,14 @@ logging.basicConfig(
 )
 
 
-def load_config(config_path: str) -> OmegaConf:
+def load_config(config_path: str) -> Union[DictConfig, ListConfig]:
     """Load configuration with support for hierarchical configs."""
-    config_path = Path(config_path)
+    config_path_obj = Path(config_path)
     
     # Check if this is a new hierarchical config
-    if "configs/" in str(config_path) and config_path.exists():
-        logging.info(f"Loading hierarchical configuration from {config_path}")
-        config = OmegaConf.load(config_path)
+    if "configs/" in str(config_path_obj) and config_path_obj.exists():
+        logging.info(f"Loading hierarchical configuration from {config_path_obj}")
+        config = OmegaConf.load(config_path_obj)
         
         # Handle defaults (inheritance)
         if "defaults" in config:
@@ -51,10 +52,10 @@ def load_config(config_path: str) -> OmegaConf:
             for default in config.defaults:
                 if "/" in default:
                     # Model variant or nested config
-                    default_path = config_path.parent.parent / f"{default}.yaml"
+                    default_path = config_path_obj.parent.parent / f"{default}.yaml"
                 else:
                     # Base config
-                    default_path = config_path.parent.parent / f"{default}.yaml"
+                    default_path = config_path_obj.parent.parent / f"{default}.yaml"
                 
                 if default_path.exists():
                     base_config = OmegaConf.load(default_path)
@@ -72,14 +73,14 @@ def load_config(config_path: str) -> OmegaConf:
                 config = OmegaConf.merge(merged_config, config)
                 
                 # Remove defaults key from final config
-                if "defaults" in config:
+                if "defaults" in config and isinstance(config, DictConfig):
                     del config["defaults"]
         
         return config
     else:
         # Legacy config loading
-        logging.info(f"Loading legacy configuration from {config_path}")
-        return OmegaConf.load(config_path)
+        logging.info(f"Loading legacy configuration from {config_path_obj}")
+        return OmegaConf.load(config_path_obj)
 
 
 def main(config_path: str) -> None:
@@ -156,7 +157,11 @@ def main(config_path: str) -> None:
     logging.info("Starting training...")
     with mlflow.start_run():
         # Log hyperparameters
-        mlflow.log_params(OmegaConf.to_container(config, resolve=True))
+        config_dict = OmegaConf.to_container(config, resolve=True)
+        if isinstance(config_dict, dict):
+            # Ensure all keys are strings
+            params_dict = {str(k): v for k, v in config_dict.items()}
+            mlflow.log_params(params_dict)
 
         pl_trainer.fit(task, datamodule=dm)
 
@@ -171,7 +176,17 @@ def main(config_path: str) -> None:
             )
 
         # Log metrics from trainer
-        mlflow.log_metrics(pl_trainer.callback_metrics)
+        metrics = pl_trainer.callback_metrics
+        if metrics:
+            # Convert tensor values to float and ensure all values are floats
+            float_metrics = {}
+            for k, v in metrics.items():
+                if hasattr(v, 'item'):
+                    float_metrics[str(k)] = float(v.item())
+                elif isinstance(v, (int, float)):
+                    float_metrics[str(k)] = float(v)
+            if float_metrics:
+                mlflow.log_metrics(float_metrics)
 
         # Log the model
         mlflow.pytorch.log_model(task, "model")

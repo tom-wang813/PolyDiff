@@ -201,11 +201,18 @@ class DiffusionTask(pl.LightningModule):
 
             # Log samples to logger
             if self.trainer.logger:
-                self.trainer.logger.log_text(
-                    key="generated_smiles",
-                    text="\n".join(generated_smiles),
-                    step=self.trainer.current_epoch,
-                )
+                # Use experiment.log_text for MLflow or similar loggers
+                if hasattr(self.trainer.logger, 'experiment'):
+                    try:
+                        self.trainer.logger.experiment.log_text(
+                            "\n".join(generated_smiles),
+                            f"generated_smiles_epoch_{self.trainer.current_epoch}.txt"
+                        )
+                    except Exception:
+                        # Fallback to regular logging
+                        self.log("generated_samples_count", len(generated_smiles))
+                else:
+                    self.log("generated_samples_count", len(generated_smiles))
             logger.info(f"Generated samples: {generated_smiles}")
 
             # Clean up dummy checkpoint

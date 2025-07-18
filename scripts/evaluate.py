@@ -21,12 +21,15 @@ import numpy as np
 from polydiff.inference import PolymerDiffusionInference
 
 # Configure logging
+from typing import List, Dict, Any, Optional
+
+
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
-def calculate_metrics(generated_smiles: List[str], reference_smiles: List[str] = None) -> Dict[str, Any]:
+def calculate_metrics(generated_smiles: List[str], reference_smiles: Optional[List[str]] = None) -> Dict[str, Any]:
     """Calculate comprehensive evaluation metrics."""
     metrics = {}
     
@@ -81,7 +84,7 @@ def calculate_metrics(generated_smiles: List[str], reference_smiles: List[str] =
             metrics["avg_internal_similarity"] = avg_similarity
     
     # Molecular properties
-    properties = {
+    properties: Dict[str, List[float]] = {
         "molecular_weights": [],
         "logps": [],
         "tpsas": [],
@@ -101,10 +104,10 @@ def calculate_metrics(generated_smiles: List[str], reference_smiles: List[str] =
     # Property statistics
     for prop_name, values in properties.items():
         if values:
-            metrics[f"{prop_name}_mean"] = np.mean(values)
-            metrics[f"{prop_name}_std"] = np.std(values)
-            metrics[f"{prop_name}_min"] = np.min(values)
-            metrics[f"{prop_name}_max"] = np.max(values)
+            metrics[f"{prop_name}_mean"] = float(np.mean(values))
+            metrics[f"{prop_name}_std"] = float(np.std(values))
+            metrics[f"{prop_name}_min"] = float(np.min(values))
+            metrics[f"{prop_name}_max"] = float(np.max(values))
     
     # Novelty (if reference dataset provided)
     if reference_smiles:
@@ -119,16 +122,16 @@ def calculate_metrics(generated_smiles: List[str], reference_smiles: List[str] =
 
 def load_reference_smiles(data_path: str) -> List[str]:
     """Load reference SMILES from training data."""
-    data_path = Path(data_path)
+    data_path_obj = Path(data_path)
     
-    if not data_path.exists():
-        logging.warning(f"Reference data not found: {data_path}")
+    if not data_path_obj.exists():
+        logging.warning(f"Reference data not found: {data_path_obj}")
         return []
     
     try:
-        with open(data_path, 'r') as f:
+        with open(data_path_obj, 'r') as f:
             smiles_list = [line.strip() for line in f if line.strip()]
-        logging.info(f"Loaded {len(smiles_list)} reference SMILES from {data_path}")
+        logging.info(f"Loaded {len(smiles_list)} reference SMILES from {data_path_obj}")
         return smiles_list
     except Exception as e:
         logging.error(f"Failed to load reference data: {e}")

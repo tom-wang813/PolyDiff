@@ -16,6 +16,7 @@ rdkit
 # Configuration and experiment tracking
 omegaconf>=2.3.0
 mlflow>=2.0.0
+types-PyYAML>=6.0.0
 
 # Utilities
 pyyaml>=6.0

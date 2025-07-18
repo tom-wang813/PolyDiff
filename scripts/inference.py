@@ -19,44 +19,15 @@ from typing import List, Optional
 from polydiff.inference import PolymerDiffusionInference
 
 # Configure logging
+from typing import List, Optional
+
+
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
-def validate_smiles(smiles_list: List[str]) -> List[dict]:
-    """Validate generated SMILES using RDKit."""
-    try:
-        from rdkit import Chem
-        from rdkit.Chem import Descriptors
-    except ImportError:
-        logging.warning("RDKit not available. Skipping SMILES validation.")
-        return [{"smiles": smiles, "valid": None} for smiles in smiles_list]
-    
-    results = []
-    for smiles in smiles_list:
-        mol = Chem.MolFromSmiles(smiles)
-        if mol is not None:
-            results.append({
-                "smiles": smiles,
-                "valid": True,
-                "mol_weight": Descriptors.ExactMolWt(mol),
-                "num_atoms": mol.GetNumAtoms(),
-                "num_bonds": mol.GetNumBonds(),
-                "num_rings": Descriptors.RingCount(mol),
-                "logp": Descriptors.MolLogP(mol),
-                "tpsa": Descriptors.TPSA(mol)
-            })
-        else:
-            results.append({
-                "smiles": smiles,
-                "valid": False
-            })
-    
-    return results
-
-
-def calculate_diversity(smiles_list: List[str]) -> float:
+def calculate_diversity(smiles_list: List[str]) -> Optional[float]:
     """Calculate Tanimoto diversity of generated molecules."""
     try:
         from rdkit import Chem
@@ -90,6 +61,38 @@ def calculate_diversity(smiles_list: List[str]) -> float:
     diversity = 1.0 - avg_similarity
     
     return diversity
+
+
+def validate_smiles(smiles_list: List[str]) -> List[dict]:
+    """Validate generated SMILES using RDKit."""
+    try:
+        from rdkit import Chem
+        from rdkit.Chem import Descriptors
+    except ImportError:
+        logging.warning("RDKit not available. Skipping SMILES validation.")
+        return [{"smiles": smiles, "valid": None} for smiles in smiles_list]
+    
+    results = []
+    for smiles in smiles_list:
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is not None:
+            results.append({
+                "smiles": smiles,
+                "valid": True,
+                "mol_weight": Descriptors.ExactMolWt(mol),
+                "num_atoms": mol.GetNumAtoms(),
+                "num_bonds": mol.GetNumBonds(),
+                "num_rings": Descriptors.RingCount(mol),
+                "logp": Descriptors.MolLogP(mol),
+                "tpsa": Descriptors.TPSA(mol)
+            })
+        else:
+            results.append({
+                "smiles": smiles,
+                "valid": False
+            })
+    
+    return results
 
 
 def main():

@@ -22,9 +22,9 @@ Usage:
 import argparse
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
-from omegaconf import OmegaConf
+from omegaconf import OmegaConf, DictConfig, ListConfig
 import yaml
 
 
@@ -82,7 +82,7 @@ def list_configs(configs_dir: Path = Path("configs")) -> None:
                 print(f"  📋 {config_file}")
 
 
-def load_hierarchical_config(config_path: Path) -> OmegaConf:
+def load_hierarchical_config(config_path: Path) -> Union[DictConfig, ListConfig]:
     """Load a hierarchical configuration with defaults resolution."""
     config = OmegaConf.load(config_path)
     
@@ -113,7 +113,7 @@ def load_hierarchical_config(config_path: Path) -> OmegaConf:
             config = OmegaConf.merge(merged_config, config)
             
             # Remove defaults key from final config
-            if "defaults" in config:
+            if "defaults" in config and isinstance(config, DictConfig):
                 del config["defaults"]
     
     return config
@@ -121,22 +121,22 @@ def load_hierarchical_config(config_path: Path) -> OmegaConf:
 
 def preview_config(config_path: str) -> None:
     """Preview the final merged configuration."""
-    config_path = Path(config_path)
+    config_path_obj = Path(config_path)
     
-    if not config_path.exists():
-        print(f"Error: Configuration file not found: {config_path}")
+    if not config_path_obj.exists():
+        print(f"Error: Configuration file not found: {config_path_obj}")
         return
     
-    print(f"Configuration Preview: {config_path}")
+    print(f"Configuration Preview: {config_path_obj}")
     print("=" * 50)
     
     try:
-        if "configs/" in str(config_path):
+        if "configs/" in str(config_path_obj):
             # New hierarchical config
-            config = load_hierarchical_config(config_path)
+            config = load_hierarchical_config(config_path_obj)
         else:
             # Legacy config
-            config = OmegaConf.load(config_path)
+            config = OmegaConf.load(config_path_obj)
         
         # Convert to YAML for pretty printing
         yaml_str = OmegaConf.to_yaml(config)
@@ -148,20 +148,20 @@ def preview_config(config_path: str) -> None:
 
 def validate_config(config_path: str) -> bool:
     """Validate a configuration file."""
-    config_path = Path(config_path)
+    config_path_obj = Path(config_path)
     
-    print(f"Validating: {config_path}")
+    print(f"Validating: {config_path_obj}")
     print("=" * 30)
     
-    if not config_path.exists():
+    if not config_path_obj.exists():
         print("❌ File not found")
         return False
     
     try:
-        if "configs/" in str(config_path):
-            config = load_hierarchical_config(config_path)
+        if "configs/" in str(config_path_obj):
+            config = load_hierarchical_config(config_path_obj)
         else:
-            config = OmegaConf.load(config_path)
+            config = OmegaConf.load(config_path_obj)
         
         # Basic validation checks
         required_sections = ["model", "data", "trainer"]

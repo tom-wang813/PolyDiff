@@ -272,22 +272,6 @@ polydiffusion/
 
 ---
 
-## 🚀 Performance
-
-### 🎯 **Generation Quality**
-- **Validity**: 95%+ chemically valid molecules
-- **Diversity**: High structural diversity (Tanimoto < 0.7)
-- **Novelty**: 80%+ novel structures vs. training set
-- **Speed**: 100+ molecules/second on modern GPUs
-
-### ⚡ **Training Efficiency**
-- **GPU Utilization**: Optimized for multi-GPU training
-- **Memory**: Efficient gradient accumulation
-- **Checkpointing**: Automatic model saving and resuming
-- **Monitoring**: Real-time training visualization
-
----
-
 ## 🤝 Contributing
 
 We welcome contributions! This project uses **research-friendly CI/CD** that focuses on functionality over strict code formatting.

@@ -328,13 +328,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Hugging Face**: Transformer implementations
 
 ---
-
-<div align="center">
-
-**⭐ Star this repo if you find it useful! ⭐**
-
-[🐛 Report Bug](https://github.com/tom-wang813/PolyDiff/issues) •
-[🚀 Request Feature](https://github.com/tom-wang813/PolyDiff/issues) •
-[💬 Discussions](https://github.com/tom-wang813/PolyDiff/discussions)
-
-</div>

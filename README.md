@@ -294,21 +294,6 @@ black . --check                   # Code formatting (advisory)
 isort . --check-only              # Import sorting (advisory)
 pytest --cov=polydiff            # Tests (required)
 ```
-
-# Run tests
-pytest --cov=polydiff
-
-# Code quality checks
-black . && isort . && mypy .
-```
-
-### � Bug Reports
-
-Found a bug? Please [open an issue](https://github.com/tom-wang813/PolyDiff/issues) with:
-- Python version and environment details
-- Steps to reproduce
-- Expected vs. actual behavior
-
 ---
 
 ## 📄 License

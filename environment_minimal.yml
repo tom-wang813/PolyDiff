@@ -1,0 +1,44 @@
+name: polydiff
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  # Core ML/DL dependencies
+  - pytorch>=2.0
+  - pytorch-lightning>=2.0
+  - transformers>=4.30
+  - tokenizers
+  # Data science
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  # Chemistry
+  - rdkit
+  # Configuration and experiment tracking
+  - omegaconf
+  - mlflow
+  # Development tools
+  - jupyter
+  - ipykernel
+  - matplotlib
+  - seaborn
+  - tqdm
+  # Code quality
+  - mypy
+  - black
+  - isort
+  - pytest
+  - pytest-cov
+  # Additional utilities
+  - pyyaml
+  - click
+  - pathlib
+  - pip:
+    - hydra-core
+    - wandb  # Optional: for experiment tracking
+    - tensorboard  # For PyTorch Lightning logging
+    - rich  # For beautiful CLI output

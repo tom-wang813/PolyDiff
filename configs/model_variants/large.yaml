@@ -1,0 +1,17 @@
+# Large Model Variant Configuration
+# ================================
+# Full-size model for best performance
+
+model:
+  hidden_size: 768
+  num_hidden_layers: 12
+  num_attention_heads: 12
+  intermediate_size: 3072
+
+# Extended training for best results
+trainer:
+  max_epochs: 200
+
+# Standard batch size
+data:
+  batch_size: 32

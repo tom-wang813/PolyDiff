@@ -1,0 +1,33 @@
+# Polymer Generation Experiment Configuration
+# ==========================================
+# Configuration for generating novel polymer SMILES
+
+defaults:
+  - base
+  - model_variants/medium
+
+# Data specific to polymer generation
+data:
+  data_path: "data/polymers.txt"
+  batch_size: 20
+
+# Experiment-specific settings
+diffusion:
+  num_timesteps: 1000
+  schedule_type: "cosine"
+
+# Output directories
+checkpointing:
+  dirpath: "experiments/polymer_generation/checkpoints"
+  filename: "polymer-{epoch:02d}-{val_loss:.2f}"
+
+logging:
+  save_dir: "experiments/polymer_generation/logs"
+  name: "polymer_diffusion"
+  version: "v1.0"
+
+# Generation settings for polymer SMILES
+generation:
+  num_samples: 20
+  max_length: 256
+  temperature: 0.8

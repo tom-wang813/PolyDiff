@@ -1,0 +1,65 @@
+# Base Configuration for PolyDiffusion Project
+# ============================================
+# This file contains the default configuration that can be inherited by other configs.
+# All other configuration files should inherit from this base to ensure consistency.
+
+# Model Architecture (passed to BertConfig)
+model:
+  vocab_size: 768  # Placeholder, will be set by tokenizer.vocab_size
+  hidden_size: 768
+  num_hidden_layers: 12
+  num_attention_heads: 12
+  intermediate_size: 3072
+  max_position_embeddings: 512
+
+# Diffusion Settings (passed to DiffusionTask)
+diffusion:
+  num_timesteps: 1000
+  schedule_type: "cosine"
+  beta_start: 0.0001
+  beta_end: 0.02
+  s: 0.008  # For cosine schedule
+
+# Data Configuration (passed to SmilesDataModule)
+data:
+  tokenizer_name: "seyonec/ChemBERTa-zinc-base-v1"
+  train_split: 0.8
+  batch_size: 32
+  num_workers: 4
+  max_length: 512
+  val_subset_ratio: 1.0
+
+# Optimizer Configuration (passed to DiffusionTask)
+optimizer:
+  lr: 1e-4
+  weight_decay: 0.01
+
+# Trainer Configuration (passed to pl.Trainer)
+trainer:
+  accelerator: "auto"
+  devices: 1
+  max_epochs: 100
+  precision: "32"
+  gradient_clip_val: 1.0
+  accumulate_grad_batches: 1
+
+# Checkpointing Configuration (for ModelCheckpoint callback)
+checkpointing:
+  enable: true
+  monitor: "val_loss"
+  mode: "min"
+  save_top_k: 3
+  save_last: true
+
+# Generation Configuration (for logging samples during training)
+generation:
+  enable: true
+  num_samples: 10
+  temperature: 1.0
+  seed: 42
+  log_every_n_epochs: 5
+
+# Logging Configuration (for TensorBoardLogger)
+logging:
+  enable: true
+  name: "bert_diffusion_model"

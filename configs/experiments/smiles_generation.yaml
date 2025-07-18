@@ -1,0 +1,33 @@
+# SMILES Generation Experiment Configuration
+# =========================================
+# Configuration for general SMILES generation
+
+defaults:
+  - base
+  - model_variants/small
+
+# Data specific to SMILES generation
+data:
+  data_path: "data/smiles.txt"
+  batch_size: 32
+
+# Fast diffusion for quick experiments
+diffusion:
+  num_timesteps: 500
+  schedule_type: "linear"
+
+# Output directories
+checkpointing:
+  dirpath: "experiments/smiles_generation/checkpoints"
+  filename: "smiles-{epoch:02d}-{val_loss:.2f}"
+
+logging:
+  save_dir: "experiments/smiles_generation/logs"
+  name: "smiles_diffusion"
+  version: "v1.0"
+
+# Generation settings
+generation:
+  num_samples: 15
+  max_length: 128
+  temperature: 1.0

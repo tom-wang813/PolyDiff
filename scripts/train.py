@@ -7,6 +7,11 @@ A high-level training script that uses PyTorch Lightning to train
 a BERT-based discrete diffusion model for polymer SMILES generation.
 
 Usage:
+    # Using new hierarchical config system
+    python scripts/train.py --config configs/experiments/polymer_generation.yaml
+    python scripts/train.py --config configs/experiments/quick_test.yaml
+    
+    # Legacy support
     python scripts/train.py --config experiments/model-1/configs/model-1.yaml
 """
 
@@ -31,14 +36,60 @@ logging.basicConfig(
 )
 
 
+def load_config(config_path: str) -> OmegaConf:
+    """Load configuration with support for hierarchical configs."""
+    config_path = Path(config_path)
+    
+    # Check if this is a new hierarchical config
+    if "configs/" in str(config_path) and config_path.exists():
+        logging.info(f"Loading hierarchical configuration from {config_path}")
+        config = OmegaConf.load(config_path)
+        
+        # Handle defaults (inheritance)
+        if "defaults" in config:
+            base_configs = []
+            for default in config.defaults:
+                if "/" in default:
+                    # Model variant or nested config
+                    default_path = config_path.parent.parent / f"{default}.yaml"
+                else:
+                    # Base config
+                    default_path = config_path.parent.parent / f"{default}.yaml"
+                
+                if default_path.exists():
+                    base_config = OmegaConf.load(default_path)
+                    base_configs.append(base_config)
+                else:
+                    logging.warning(f"Default config not found: {default_path}")
+            
+            # Merge configs (later configs override earlier ones)
+            if base_configs:
+                merged_config = base_configs[0]
+                for base_config in base_configs[1:]:
+                    merged_config = OmegaConf.merge(merged_config, base_config)
+                
+                # Current config overrides all defaults
+                config = OmegaConf.merge(merged_config, config)
+                
+                # Remove defaults key from final config
+                if "defaults" in config:
+                    del config["defaults"]
+        
+        return config
+    else:
+        # Legacy config loading
+        logging.info(f"Loading legacy configuration from {config_path}")
+        return OmegaConf.load(config_path)
+
+
 def main(config_path: str) -> None:
     """Main training function.
 
     Args:
         config_path: Path to the YAML configuration file.
     """
-    logging.info(f"Loading configuration from {config_path}")
-    config = OmegaConf.load(config_path)
+    logging.info(f"Starting training with config: {config_path}")
+    config = load_config(config_path)
 
     # --- Setup DataModule ---
     data_config = config.data

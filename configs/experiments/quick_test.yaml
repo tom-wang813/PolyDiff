@@ -1,0 +1,42 @@
+# Quick Test Experiment Configuration
+# ==================================
+# Configuration for quick testing and debugging (equivalent to current model-1)
+
+defaults:
+  - base
+  - model_variants/small
+
+# Data specific to quick testing
+data:
+  data_path: "data/sample_smiles.txt"  # Use sample data for immediate testing
+  batch_size: 2
+  val_subset_ratio: 1.0
+
+# Minimal diffusion for testing
+diffusion:
+  num_timesteps: 5
+  schedule_type: "cosine"
+
+# Quick training
+trainer:
+  accelerator: "mps"  # For macOS
+  devices: "auto"
+  max_epochs: 1
+  precision: "32"
+
+# Output directories
+checkpointing:
+  dirpath: "experiments/quick_test/checkpoints"
+  filename: "test-{epoch:02d}-{val_loss:.2f}"
+
+logging:
+  save_dir: "experiments/quick_test/logs"
+  name: "quick_test"
+  version: "v1.0"
+
+# Quick generation for testing
+generation:
+  num_samples: 5
+  max_length: 10
+  temperature: 1.0
+  log_every_n_epochs: 1

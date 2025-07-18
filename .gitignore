@@ -1,11 +1,106 @@
-data/
-mlruns/
-.coverage
-*.pyc
-.flake8
-mypy.ini
-.vscode/
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
 *.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyTorch
+*.pth
+*.pt
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+polydiff_env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Experiments and data
+experiments/*/checkpoints/
+experiments/*/logs/
+mlruns/
+wandb/
+outputs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Model files (large)
+*.ckpt
+*.safetensors
+models/
+
+# Data files (can be large, uncomment if needed)
+data/
+
+# Results
+results/
+outputs/
+*.json
+*.csv
+*.pkl
+*.pickle
+
+# Conda
+environment_lock.yml
+
+# Legacy
+.flake8

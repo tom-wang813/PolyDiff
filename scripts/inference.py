@@ -153,12 +153,6 @@ def main():
         help="Calculate diversity metrics"
     )
     parser.add_argument(
-        "--batch_size", 
-        type=int, 
-        default=1, 
-        help="Batch size for generation"
-    )
-    parser.add_argument(
         "--verbose", 
         action="store_true", 
         help="Print detailed generation information"
@@ -189,8 +183,7 @@ def main():
             num_samples=args.num_samples,
             max_length=args.max_length,
             temperature=args.temperature,
-            seed=args.seed,
-            batch_size=args.batch_size
+            seed=args.seed
         )
         logging.info(f"Successfully generated {len(generated_smiles)} molecules")
     except Exception as e:
@@ -205,7 +198,6 @@ def main():
             "max_length": args.max_length,
             "temperature": args.temperature,
             "seed": args.seed,
-            "batch_size": args.batch_size,
             "checkpoint": str(args.checkpoint)
         }
     }

@@ -28,8 +28,8 @@ python scripts/inference.py \
 # Evaluate model performance
 python scripts/evaluate.py \
     --checkpoint experiments/model-1/checkpoints/best-epoch=00-val_loss=0.51.ckpt \
-    --num_samples 1000 \
-    --reference_data data/smiles.txt
+    --num_samples 100 \
+    --reference_data data/sample_smiles.txt
 ```
 
 ### Configuration Management

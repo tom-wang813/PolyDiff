@@ -169,12 +169,6 @@ def main():
         help="Output file for evaluation results (JSON)"
     )
     parser.add_argument(
-        "--batch_size",
-        type=int,
-        default=16,
-        help="Batch size for generation"
-    )
-    parser.add_argument(
         "--temperature",
         type=float,
         default=1.0,
@@ -214,8 +208,7 @@ def main():
         generated_smiles = inference_engine.generate_molecules(
             num_samples=args.num_samples,
             temperature=args.temperature,
-            seed=args.seed,
-            batch_size=args.batch_size
+            seed=args.seed
         )
         generation_time = time.time() - start_time
         logging.info(f"Generation completed in {generation_time:.2f} seconds")
@@ -238,7 +231,6 @@ def main():
         "num_samples": args.num_samples,
         "temperature": args.temperature,
         "seed": args.seed,
-        "batch_size": args.batch_size,
         "checkpoint": str(args.checkpoint)
     }
     

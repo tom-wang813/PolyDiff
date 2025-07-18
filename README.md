@@ -212,9 +212,9 @@ python scripts/inference.py \
 
 ```bash
 python scripts/evaluate.py \
-    --checkpoint path/to/model.ckpt \
-    --num_samples 5000 \
-    --reference_data data/training_set.txt \
+    --checkpoint experiments/model-1/checkpoints/best-epoch=00-val_loss=0.51.ckpt \
+    --num_samples 100 \
+    --reference_data data/sample_smiles.txt \
     --output evaluation_report.json
 ```
 
@@ -290,13 +290,26 @@ polydiffusion/
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+We welcome contributions! This project uses **research-friendly CI/CD** that focuses on functionality over strict code formatting.
+
+### 🔄 **CI/CD Philosophy**
+- ✅ **Functionality First**: Tests must pass, but code style warnings won't break builds
+- 🎯 **Research-Focused**: MyPy, Black, and isort run as advisory checks only
+- 🚀 **Developer-Friendly**: Push without worrying about perfect formatting
+- 📊 **Coverage Optional**: Test coverage reporting available but not mandatory
 
 ### 🧪 Development Setup
 
 ```bash
 # Install development dependencies
 pip install -e ".[dev]"
+
+# Run checks locally (all optional)
+mypy --config-file mypy.ini .     # Type checking (relaxed)
+black . --check                   # Code formatting (advisory)
+isort . --check-only              # Import sorting (advisory)
+pytest --cov=polydiff            # Tests (required)
+```
 
 # Run tests
 pytest --cov=polydiff
